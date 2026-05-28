@@ -399,8 +399,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const SHEET_CSV_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWuajsQR_szTUTyv_UiEddUSGYPfUa5-LBDIARNsDNQ7fixpk7U3EDicatPp9pNouOOw5PKD6JyrYU/pub?gid=354428631&single=true&output=csv';
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyq7UTE3y_dCQ8dJrHaBlUhIDCAsg7FfxMBTPAV-5xPf4n_mAylshUZ84xO7_C0Z7l0/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZZQtLnguNwedVighOcai9ZOf6KI-b10Sm_L6FZA6PnhMBn2ONJxqF8ak5w7YySEgA/exec';
 // ─────────────────────────────────────────────────────────────────────────────
 
 let allNames = [];
@@ -435,18 +434,13 @@ async function loadNames() {
   document.getElementById('refresh-btn').textContent = '↻ Loading…';
   try {
     // Use a CORS proxy to avoid browser blocking the cross-origin CSV fetch
-    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV_URL);
-    const res  = await fetch(proxyUrl);
+    const res = await fetch(APPS_SCRIPT_URL + '?action=names');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
 
-    const lines = text.split(/\r?\n/);
-    allNames = lines
-      .slice(1)                          // skip header row
-      .map(r => r.trim().replace(/^"|"$/g, ''))
-      .filter(n => n && !n.startsWith('=') && n.length > 1)
-      .sort((a, b) => a.localeCompare(b));
-
+    const json = JSON.parse(text);
+    if (json.status !== 'ok') throw new Error('Script error');
+    allNames = json.names;
     if (allNames.length === 0) throw new Error('No names found');
     showToast('List updated — ' + allNames.length + ' names', 'success');
   } catch(e) {
