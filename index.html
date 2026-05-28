@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,15 +18,12 @@
       --navy:   #023C4F;
       --cyan:   #00C0FF;
       --gold:   #FFCC33;
-      --sky:    #CFEAF5;
-      --teal:   #3E6A77;
-      --pale:   #FFEBAA;
       --white:  #FFFFFF;
-      --ink:    #012830;
-      --muted:  #5a8a96;
-      --border: rgba(0,192,255,0.18);
-      --radius: 16px;
-      --sig-bg: #f8fbfc;
+      --light:  #e8f4f8;
+      --muted:  #a0c4d0;
+      --border: rgba(0,192,255,0.22);
+      --radius: 14px;
+      --sig-bg: #ffffff;
     }
 
     html, body {
@@ -45,7 +42,7 @@
       height: 100vh;
       max-width: 900px;
       margin: 0 auto;
-      padding: 0 24px 24px;
+      padding: 0 24px 20px;
     }
 
     /* ── HEADER ── */
@@ -53,20 +50,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 0 16px;
+      padding: 18px 0 14px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
     .header-left h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 26px;
-      font-weight: 400;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 24px;
+      font-weight: 600;
       color: var(--white);
-      letter-spacing: -0.3px;
+      letter-spacing: -0.2px;
     }
     .header-left p {
       font-size: 13px;
-      color: var(--cyan);
+      color: var(--muted);
       margin-top: 2px;
       font-weight: 300;
     }
@@ -96,7 +93,7 @@
       padding: 5px 12px;
       border-radius: 20px;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      transition: background 0.2s;
     }
     #refresh-btn:active { background: rgba(0,192,255,0.1); }
 
@@ -119,8 +116,8 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 18px;
-      padding-top: 20px;
+      gap: 16px;
+      padding-top: 18px;
       overflow: hidden;
     }
 
@@ -130,113 +127,111 @@
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--cyan);
+      color: var(--light);
       margin-bottom: 6px;
     }
 
     /* ── NAME SEARCH ── */
     .name-section { flex-shrink: 0; }
-    .search-wrap {
-      position: relative;
-    }
+    .search-wrap { position: relative; }
+
     #name-search {
       width: 100%;
       padding: 14px 48px 14px 18px;
       font-size: 18px;
       font-family: 'DM Sans', sans-serif;
       font-weight: 400;
-      background: rgba(255,255,255,0.06);
-      border: 1.5px solid var(--border);
+      background: var(--white);
+      border: 2px solid var(--white);
       border-radius: var(--radius);
-      color: var(--white);
+      color: #012830;
       outline: none;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s;
       -webkit-appearance: none;
     }
-    #name-search::placeholder { color: var(--muted); }
-    #name-search:focus {
-      border-color: var(--cyan);
-      background: rgba(255,255,255,0.09);
-    }
+    #name-search::placeholder { color: #7aaab8; }
+    #name-search:focus { border-color: var(--cyan); }
+
     #clear-search {
       position: absolute;
       right: 14px; top: 50%;
       transform: translateY(-50%);
       background: none; border: none;
-      color: var(--muted); font-size: 20px;
+      color: #7aaab8; font-size: 22px;
       cursor: pointer; display: none;
       line-height: 1;
     }
     #clear-search.visible { display: block; }
 
     #name-list-wrap {
-      margin-top: 8px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
+      margin-top: 6px;
+      background: var(--white);
+      border: 2px solid var(--cyan);
       border-radius: var(--radius);
       overflow-y: auto;
-      max-height: 180px;
+      max-height: 190px;
       display: none;
     }
     #name-list-wrap.visible { display: block; }
+
     .name-option {
       padding: 12px 18px;
       font-size: 17px;
       cursor: pointer;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-      color: var(--white);
+      border-bottom: 1px solid #e8f4f8;
+      transition: background 0.12s;
+      color: #012830;
+      font-family: 'DM Sans', sans-serif;
     }
     .name-option:last-child { border-bottom: none; }
-    .name-option:active, .name-option.hover { background: rgba(0,192,255,0.12); }
+    .name-option:active { background: #e0f5ff; }
     .name-option mark {
       background: none;
-      color: var(--cyan);
+      color: #007ab8;
       font-weight: 600;
     }
     .name-option.walk-in {
-      color: var(--gold);
+      color: #b07800;
       font-style: italic;
     }
+
     #selected-name-display {
       display: none;
       align-items: center;
       justify-content: space-between;
-      background: rgba(0,192,255,0.08);
-      border: 1.5px solid var(--cyan);
+      background: var(--white);
+      border: 2px solid var(--cyan);
       border-radius: var(--radius);
       padding: 14px 18px;
       font-size: 20px;
       font-weight: 500;
-      color: var(--white);
+      color: #012830;
     }
     #selected-name-display.visible { display: flex; }
     #change-name-btn {
       background: none; border: none;
-      color: var(--cyan); font-size: 13px;
+      color: var(--navy); font-size: 13px;
       font-family: 'DM Sans', sans-serif;
       cursor: pointer; white-space: nowrap;
+      opacity: 0.6;
     }
 
-    /* ── FREETEXT WALKIN ── */
-    #walkin-wrap {
-      margin-top: 8px;
-      display: none;
-    }
+    /* ── WALK-IN ── */
+    #walkin-wrap { margin-top: 6px; display: none; }
     #walkin-wrap.visible { display: block; }
     #walkin-input {
       width: 100%;
       padding: 12px 18px;
       font-size: 17px;
       font-family: 'DM Sans', sans-serif;
-      background: rgba(255,204,51,0.06);
-      border: 1.5px solid rgba(255,204,51,0.35);
+      background: var(--white);
+      border: 2px solid var(--gold);
       border-radius: var(--radius);
-      color: var(--white);
+      color: #012830;
       outline: none;
     }
-    #walkin-input::placeholder { color: rgba(255,204,51,0.4); }
-    #walkin-input:focus { border-color: var(--gold); }
+    #walkin-input::placeholder { color: #b09040; }
+    #walkin-input:focus { border-color: #e0a800; }
 
     /* ── SIGNATURE ── */
     .sig-section {
@@ -249,7 +244,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     #clear-sig-btn {
       background: none; border: none;
@@ -258,12 +253,13 @@
       cursor: pointer;
     }
     #clear-sig-btn:active { color: var(--cyan); }
+
     #sig-canvas-wrap {
       flex: 1;
       position: relative;
       border-radius: var(--radius);
       overflow: hidden;
-      border: 1.5px solid var(--border);
+      border: 2px solid var(--white);
       background: var(--sig-bg);
       min-height: 140px;
     }
@@ -280,6 +276,7 @@
       transform: translate(-50%, -50%);
       color: #b0c8d0;
       font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
       pointer-events: none;
       display: flex;
       flex-direction: column;
@@ -287,31 +284,30 @@
       gap: 8px;
       transition: opacity 0.3s;
     }
-    #sig-placeholder svg { opacity: 0.4; }
+    #sig-placeholder svg { opacity: 0.35; }
 
-    /* ── FOOTER BUTTONS ── */
+    /* ── FOOTER ── */
     footer {
-      display: flex;
-      gap: 12px;
-      padding-top: 16px;
+      padding-top: 14px;
       flex-shrink: 0;
     }
     #submit-btn {
-      flex: 1;
+      width: 100%;
       padding: 18px;
-      font-family: 'DM Serif Display', serif;
+      font-family: 'DM Sans', sans-serif;
       font-size: 20px;
+      font-weight: 600;
       background: var(--cyan);
-      color: var(--navy);
+      color: var(--white);
       border: none;
       border-radius: var(--radius);
       cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: transform 0.1s, opacity 0.2s;
+      letter-spacing: 0.03em;
+      transition: transform 0.1s, opacity 0.2s, background 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
-    #submit-btn:disabled { opacity: 0.35; cursor: default; }
-    #submit-btn:not(:disabled):active { transform: scale(0.98); }
+    #submit-btn:disabled { opacity: 0.3; cursor: default; background: var(--cyan); }
+    #submit-btn:not(:disabled):active { transform: scale(0.98); background: #00a8e0; }
     #submit-btn.loading { opacity: 0.6; pointer-events: none; }
 
     /* ── TOAST ── */
@@ -325,6 +321,7 @@
       padding: 14px 28px;
       border-radius: 40px;
       font-size: 16px;
+      font-family: 'DM Sans', sans-serif;
       font-weight: 500;
       pointer-events: none;
       transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
@@ -332,10 +329,7 @@
       white-space: nowrap;
       z-index: 100;
     }
-    #toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     #toast.success { border-color: #4ade80; color: #4ade80; }
     #toast.error   { border-color: #f87171; color: #f87171; }
     #toast.queued  { border-color: var(--gold); color: var(--gold); }
@@ -386,7 +380,7 @@
       <div id="sig-canvas-wrap">
         <canvas id="sig-canvas"></canvas>
         <div id="sig-placeholder">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3E6A77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#3E6A77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
             <path d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
           </svg>
@@ -397,14 +391,14 @@
   </main>
 
   <footer>
-    <button id="submit-btn" disabled>Done — Next Person →</button>
+    <button id="submit-btn" disabled>Submit</button>
   </footer>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ─── CONFIG — edit these two lines ───────────────────────────────────────────
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
 const SHEET_CSV_URL   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWuajsQR_szTUTyv_UiEddUSGYPfUa5-LBDIARNsDNQ7fixpk7U3EDicatPp9pNouOOw5PKD6JyrYU/pub?gid=354428631&single=true&output=csv';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyq7UTE3y_dCQ8dJrHaBlUhIDCAsg7FfxMBTPAV-5xPf4n_mAylshUZ84xO7_C0Z7l0/exec';
 // ─────────────────────────────────────────────────────────────────────────────
@@ -412,7 +406,8 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyq7UTE3y_dCQ8d
 let allNames = [];
 let selectedName = '';
 let hasSig = false;
-let offlineQueue = JSON.parse(localStorage.getItem('signin_queue') || '[]');
+let offlineQueue = [];
+try { offlineQueue = JSON.parse(localStorage.getItem('signin_queue') || '[]'); } catch(e) {}
 
 // Date display
 document.getElementById('event-date').textContent =
@@ -435,21 +430,28 @@ window.addEventListener('online',  updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 updateOnlineStatus();
 
-// ── NAMES ─────────────────────────────────────────────────────────────────────
+// ── NAMES — fetch via no-cors-safe Google Sheets CSV ─────────────────────────
 async function loadNames() {
   document.getElementById('refresh-btn').textContent = '↻ Loading…';
   try {
-    const res  = await fetch(SHEET_CSV_URL);
+    // Use a CORS proxy to avoid browser blocking the cross-origin CSV fetch
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(SHEET_CSV_URL);
+    const res  = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
-    // Parse CSV — expects one column "Name" with header row
-    allNames = text.trim().split('\n')
-      .slice(1)
+
+    const lines = text.split(/\r?\n/);
+    allNames = lines
+      .slice(1)                          // skip header row
       .map(r => r.trim().replace(/^"|"$/g, ''))
-      .filter(Boolean)
+      .filter(n => n && !n.startsWith('=') && n.length > 1)
       .sort((a, b) => a.localeCompare(b));
+
+    if (allNames.length === 0) throw new Error('No names found');
     showToast('List updated — ' + allNames.length + ' names', 'success');
   } catch(e) {
-    showToast('Could not load names — check connection', 'error');
+    showToast('Could not load names — tap Refresh to try again', 'error');
+    console.error('loadNames error:', e);
   }
   document.getElementById('refresh-btn').textContent = '↻ Refresh list';
 }
@@ -469,18 +471,21 @@ const selectedText    = document.getElementById('selected-name-text');
 nameSearch.addEventListener('input', () => {
   const q = nameSearch.value.trim();
   clearSearchBtn.classList.toggle('visible', q.length > 0);
-  if (q.length < 1) { nameListWrap.classList.remove('visible'); walkinWrap.classList.remove('visible'); return; }
+  if (q.length < 1) {
+    nameListWrap.classList.remove('visible');
+    walkinWrap.classList.remove('visible');
+    return;
+  }
 
   const filtered = allNames.filter(n => n.toLowerCase().includes(q.toLowerCase())).slice(0, 30);
-  const showWalkin = q.length >= 2;
 
   nameList.innerHTML = filtered.map(n => {
-    const esc = n.replace(/</g,'&lt;');
+    const esc = n.replace(/&/g,'&amp;').replace(/</g,'&lt;');
     const hi  = esc.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'), '<mark>$1</mark>');
-    return `<div class="name-option" data-name="${esc}">${hi}</div>`;
+    return `<div class="name-option" data-name="${n.replace(/"/g,'&quot;')}">${hi}</div>`;
   }).join('');
 
-  if (showWalkin) {
+  if (q.length >= 2) {
     nameList.innerHTML += `<div class="name-option walk-in" data-name="__walkin__">+ Not on list? Enter manually</div>`;
   }
 
@@ -504,20 +509,14 @@ nameSearch.addEventListener('input', () => {
 clearSearchBtn.addEventListener('click', resetNameSection);
 
 walkinInput.addEventListener('input', () => {
-  const v = walkinInput.value.trim();
-  if (v.length > 1) {
-    selectedName = v + ' (walk-in)';
-    checkReady();
-  } else {
-    selectedName = '';
-    checkReady();
-  }
+  selectedName = walkinInput.value.trim().length > 1 ? walkinInput.value.trim() + ' (walk-in)' : '';
+  checkReady();
 });
 
 function selectName(name) {
   selectedName = name;
   selectedText.textContent = name;
-  nameSearch.style.display   = 'none';
+  nameSearch.style.display = 'none';
   clearSearchBtn.classList.remove('visible');
   nameListWrap.classList.remove('visible');
   walkinWrap.classList.remove('visible');
@@ -544,13 +543,12 @@ const canvas      = document.getElementById('sig-canvas');
 const ctx         = canvas.getContext('2d');
 const placeholder = document.getElementById('sig-placeholder');
 let drawing = false;
-let lastX = 0, lastY = 0;
 
 function resizeCanvas() {
   const wrap = document.getElementById('sig-canvas-wrap');
   const dpr  = window.devicePixelRatio || 1;
-  const w    = wrap.clientWidth;
-  const h    = wrap.clientHeight;
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
   canvas.width  = w * dpr;
   canvas.height = h * dpr;
   canvas.style.width  = w + 'px';
@@ -569,14 +567,12 @@ function getPos(e) {
   const src = e.touches ? e.touches[0] : e;
   return { x: src.clientX - r.left, y: src.clientY - r.top };
 }
-
 function startDraw(e) {
   e.preventDefault();
   drawing = true;
   const p = getPos(e);
-  lastX = p.x; lastY = p.y;
   ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
+  ctx.moveTo(p.x, p.y);
 }
 function draw(e) {
   if (!drawing) return;
@@ -584,17 +580,13 @@ function draw(e) {
   const p = getPos(e);
   ctx.lineTo(p.x, p.y);
   ctx.stroke();
-  lastX = p.x; lastY = p.y;
   if (!hasSig) {
     hasSig = true;
     placeholder.style.opacity = '0';
     checkReady();
   }
 }
-function endDraw(e) {
-  drawing = false;
-  ctx.beginPath();
-}
+function endDraw() { drawing = false; ctx.beginPath(); }
 
 canvas.addEventListener('mousedown',  startDraw);
 canvas.addEventListener('mousemove',  draw);
@@ -604,7 +596,8 @@ canvas.addEventListener('touchmove',  draw,      { passive: false });
 canvas.addEventListener('touchend',   endDraw);
 
 document.getElementById('clear-sig-btn').addEventListener('click', () => {
-  ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
   hasSig = false;
   placeholder.style.opacity = '1';
   checkReady();
@@ -626,8 +619,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
 
   const timestamp  = new Date().toISOString();
   const sigDataUrl = canvas.toDataURL('image/png');
-
-  const payload = { name, timestamp, signature: sigDataUrl };
+  const payload    = { name, timestamp, signature: sigDataUrl };
 
   if (navigator.onLine) {
     const ok = await postRecord(payload);
@@ -646,7 +638,7 @@ document.getElementById('submit-btn').addEventListener('click', async () => {
   }
 
   btn.classList.remove('loading');
-  btn.textContent = 'Done — Next Person →';
+  btn.textContent = 'Submit';
   btn.disabled = true;
 });
 
@@ -664,7 +656,7 @@ async function postRecord(payload) {
 
 function queueRecord(payload) {
   offlineQueue.push(payload);
-  localStorage.setItem('signin_queue', JSON.stringify(offlineQueue));
+  try { localStorage.setItem('signin_queue', JSON.stringify(offlineQueue)); } catch(e) {}
   updateQueueBar();
 }
 
@@ -680,7 +672,7 @@ async function flushQueue() {
     }
   }
   if (sent > 0) {
-    localStorage.setItem('signin_queue', JSON.stringify(offlineQueue));
+    try { localStorage.setItem('signin_queue', JSON.stringify(offlineQueue)); } catch(e) {}
     showToast(sent + ' queued record(s) synced', 'success');
     updateQueueBar();
   }
@@ -699,7 +691,8 @@ updateQueueBar();
 
 function resetAll() {
   resetNameSection();
-  ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
   hasSig = false;
   placeholder.style.opacity = '1';
   checkReady();
@@ -710,7 +703,7 @@ let toastTimer;
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className   = 'show ' + type;
+  t.className = 'show ' + type;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.className = type; }, 3000);
 }
