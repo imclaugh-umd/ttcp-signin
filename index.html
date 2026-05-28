@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#023C4F">
+  <title>TTCP Sign-In</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #023C4F;
+      --cyan:   #00C0FF;
+      --gold:   #FFCC33;
+      --sky:    #CFEAF5;
+      --teal:   #3E6A77;
+      --pale:   #FFEBAA;
+      --white:  #FFFFFF;
+      --ink:    #012830;
+      --muted:  #5a8a96;
+      --border: rgba(0,192,255,0.18);
+      --radius: 16px;
+      --sig-bg: #f8fbfc;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--white);
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 24px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .header-left h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: -0.3px;
+    }
+    .header-left p {
+      font-size: 13px;
+      color: var(--cyan);
+      margin-top: 2px;
+      font-weight: 300;
+    }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      transition: background 0.4s;
+    }
+    #status-dot.online  { background: #4ade80; }
+    #status-dot.offline { background: #f87171; }
+    #status-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    #refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--cyan);
+      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #refresh-btn:active { background: rgba(0,192,255,0.1); }
+
+    /* ── QUEUE BADGE ── */
+    #queue-bar {
+      display: none;
+      background: rgba(255,204,51,0.12);
+      border: 1px solid rgba(255,204,51,0.3);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: var(--gold);
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
+    #queue-bar.visible { display: block; }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding-top: 20px;
+      overflow: hidden;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+
+    /* ── NAME SEARCH ── */
+    .name-section { flex-shrink: 0; }
+    .search-wrap {
+      position: relative;
+    }
+    #name-search {
+      width: 100%;
+      padding: 14px 48px 14px 18px;
+      font-size: 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-appearance: none;
+    }
+    #name-search::placeholder { color: var(--muted); }
+    #name-search:focus {
+      border-color: var(--cyan);
+      background: rgba(255,255,255,0.09);
+    }
+    #clear-search {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--muted); font-size: 20px;
+      cursor: pointer; display: none;
+      line-height: 1;
+    }
+    #clear-search.visible { display: block; }
+
+    #name-list-wrap {
+      margin-top: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-y: auto;
+      max-height: 180px;
+      display: none;
+    }
+    #name-list-wrap.visible { display: block; }
+    .name-option {
+      padding: 12px 18px;
+      font-size: 17px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      color: var(--white);
+    }
+    .name-option:last-child { border-bottom: none; }
+    .name-option:active, .name-option.hover { background: rgba(0,192,255,0.12); }
+    .name-option mark {
+      background: none;
+      color: var(--cyan);
+      font-weight: 600;
+    }
+    .name-option.walk-in {
+      color: var(--gold);
+      font-style: italic;
+    }
+    #selected-name-display {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,192,255,0.08);
+      border: 1.5px solid var(--cyan);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--white);
+    }
+    #selected-name-display.visible { display: flex; }
+    #change-name-btn {
+      background: none; border: none;
+      color: var(--cyan); font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; white-space: nowrap;
+    }
+
+    /* ── FREETEXT WALKIN ── */
+    #walkin-wrap {
+      margin-top: 8px;
+      display: none;
+    }
+    #walkin-wrap.visible { display: block; }
+    #walkin-input {
+      width: 100%;
+      padding: 12px 18px;
+      font-size: 17px;
+      font-family: 'DM Sans', sans-serif;
+      background: rgba(255,204,51,0.06);
+      border: 1.5px solid rgba(255,204,51,0.35);
+      border-radius: var(--radius);
+      color: var(--white);
+      outline: none;
+    }
+    #walkin-input::placeholder { color: rgba(255,204,51,0.4); }
+    #walkin-input:focus { border-color: var(--gold); }
+
+    /* ── SIGNATURE ── */
+    .sig-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .sig-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    #clear-sig-btn {
+      background: none; border: none;
+      color: var(--muted); font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+    }
+    #clear-sig-btn:active { color: var(--cyan); }
+    #sig-canvas-wrap {
+      flex: 1;
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      background: var(--sig-bg);
+      min-height: 140px;
+    }
+    #sig-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    #sig-placeholder {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      color: #b0c8d0;
+      font-size: 15px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.3s;
+    }
+    #sig-placeholder svg { opacity: 0.4; }
+
+    /* ── FOOTER BUTTONS ── */
+    footer {
+      display: flex;
+      gap: 12px;
+      padding-top: 16px;
+      flex-shrink: 0;
+    }
+    #submit-btn {
+      flex: 1;
+      padding: 18px;
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      background: var(--cyan);
+      color: var(--navy);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: transform 0.1s, opacity 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #submit-btn:disabled { opacity: 0.35; cursor: default; }
+    #submit-btn:not(:disabled):active { transform: scale(0.98); }
+    #submit-btn.loading { opacity: 0.6; pointer-events: none; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--navy);
+      border: 1.5px solid var(--cyan);
+      color: var(--white);
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-size: 16px;
+      font-weight: 500;
+      pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+      opacity: 0;
+      white-space: nowrap;
+      z-index: 100;
+    }
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    #toast.success { border-color: #4ade80; color: #4ade80; }
+    #toast.error   { border-color: #f87171; color: #f87171; }
+    #toast.queued  { border-color: var(--gold); color: var(--gold); }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="header-left">
+      <h1>TTCP Sign-In</h1>
+      <p id="event-date"></p>
+    </div>
+    <div class="header-right">
+      <div id="status-dot"></div>
+      <span id="status-label">checking…</span>
+      <button id="refresh-btn">↻ Refresh list</button>
+    </div>
+  </header>
+
+  <div id="queue-bar"></div>
+
+  <main>
+    <!-- NAME -->
+    <div class="name-section">
+      <div class="section-label">1 — Select your name</div>
+      <div class="search-wrap">
+        <input id="name-search" type="text" placeholder="Type to search…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button id="clear-search" aria-label="Clear">×</button>
+      </div>
+      <div id="name-list-wrap">
+        <div id="name-list"></div>
+      </div>
+      <div id="walkin-wrap">
+        <input id="walkin-input" type="text" placeholder="Enter full name (walk-in)…" autocorrect="off" spellcheck="false">
+      </div>
+      <div id="selected-name-display">
+        <span id="selected-name-text"></span>
+        <button id="change-name-btn">Change</button>
+      </div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="sig-section">
+      <div class="sig-controls">
+        <div class="section-label" style="margin-bottom:0">2 — Sign below</div>
+        <button id="clear-sig-btn">Clear signature</button>
+      </div>
+      <div id="sig-canvas-wrap">
+        <canvas id="sig-canvas"></canvas>
+        <div id="sig-placeholder">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3E6A77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/>
+            <path d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+          </svg>
+          Sign with finger or stylus
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <button id="submit-btn" disabled>Done — Next Person →</button>
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── CONFIG — edit these two lines ───────────────────────────────────────────
+const SHEET_CSV_URL   = 'YOUR_PUBLISHED_CSV_URL_HERE';
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+// ─────────────────────────────────────────────────────────────────────────────
+
+let allNames = [];
+let selectedName = '';
+let hasSig = false;
+let offlineQueue = JSON.parse(localStorage.getItem('signin_queue') || '[]');
+
+// Date display
+document.getElementById('event-date').textContent =
+  new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+// ── NETWORK STATUS ────────────────────────────────────────────────────────────
+function updateOnlineStatus() {
+  const dot   = document.getElementById('status-dot');
+  const label = document.getElementById('status-label');
+  if (navigator.onLine) {
+    dot.className = 'online';
+    label.textContent = 'Online';
+    flushQueue();
+  } else {
+    dot.className = 'offline';
+    label.textContent = 'Offline';
+  }
+}
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ── NAMES ─────────────────────────────────────────────────────────────────────
+async function loadNames() {
+  document.getElementById('refresh-btn').textContent = '↻ Loading…';
+  try {
+    const res  = await fetch(SHEET_CSV_URL + '&t=' + Date.now());
+    const text = await res.text();
+    // Parse CSV — expects one column "Name" with header row
+    allNames = text.trim().split('\n')
+      .slice(1)
+      .map(r => r.trim().replace(/^"|"$/g, ''))
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+    showToast('List updated — ' + allNames.length + ' names', 'success');
+  } catch(e) {
+    showToast('Could not load names — check connection', 'error');
+  }
+  document.getElementById('refresh-btn').textContent = '↻ Refresh list';
+}
+document.getElementById('refresh-btn').addEventListener('click', loadNames);
+loadNames();
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+const nameSearch      = document.getElementById('name-search');
+const nameListWrap    = document.getElementById('name-list-wrap');
+const nameList        = document.getElementById('name-list');
+const clearSearchBtn  = document.getElementById('clear-search');
+const walkinWrap      = document.getElementById('walkin-wrap');
+const walkinInput     = document.getElementById('walkin-input');
+const selectedDisplay = document.getElementById('selected-name-display');
+const selectedText    = document.getElementById('selected-name-text');
+
+nameSearch.addEventListener('input', () => {
+  const q = nameSearch.value.trim();
+  clearSearchBtn.classList.toggle('visible', q.length > 0);
+  if (q.length < 1) { nameListWrap.classList.remove('visible'); walkinWrap.classList.remove('visible'); return; }
+
+  const filtered = allNames.filter(n => n.toLowerCase().includes(q.toLowerCase())).slice(0, 30);
+  const showWalkin = q.length >= 2;
+
+  nameList.innerHTML = filtered.map(n => {
+    const esc = n.replace(/</g,'&lt;');
+    const hi  = esc.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi'), '<mark>$1</mark>');
+    return `<div class="name-option" data-name="${esc}">${hi}</div>`;
+  }).join('');
+
+  if (showWalkin) {
+    nameList.innerHTML += `<div class="name-option walk-in" data-name="__walkin__">+ Not on list? Enter manually</div>`;
+  }
+
+  nameListWrap.classList.add('visible');
+
+  nameList.querySelectorAll('.name-option').forEach(el => {
+    el.addEventListener('click', () => {
+      if (el.dataset.name === '__walkin__') {
+        walkinWrap.classList.add('visible');
+        nameListWrap.classList.remove('visible');
+        nameSearch.style.display = 'none';
+        clearSearchBtn.classList.remove('visible');
+        walkinInput.focus();
+      } else {
+        selectName(el.dataset.name);
+      }
+    });
+  });
+});
+
+clearSearchBtn.addEventListener('click', resetNameSection);
+
+walkinInput.addEventListener('input', () => {
+  const v = walkinInput.value.trim();
+  if (v.length > 1) {
+    selectedName = v + ' (walk-in)';
+    checkReady();
+  } else {
+    selectedName = '';
+    checkReady();
+  }
+});
+
+function selectName(name) {
+  selectedName = name;
+  selectedText.textContent = name;
+  nameSearch.style.display   = 'none';
+  clearSearchBtn.classList.remove('visible');
+  nameListWrap.classList.remove('visible');
+  walkinWrap.classList.remove('visible');
+  selectedDisplay.classList.add('visible');
+  checkReady();
+}
+
+document.getElementById('change-name-btn').addEventListener('click', resetNameSection);
+
+function resetNameSection() {
+  selectedName = '';
+  nameSearch.value = '';
+  nameSearch.style.display = '';
+  walkinInput.value = '';
+  selectedDisplay.classList.remove('visible');
+  nameListWrap.classList.remove('visible');
+  walkinWrap.classList.remove('visible');
+  clearSearchBtn.classList.remove('visible');
+  checkReady();
+}
+
+// ── SIGNATURE CANVAS ──────────────────────────────────────────────────────────
+const canvas      = document.getElementById('sig-canvas');
+const ctx         = canvas.getContext('2d');
+const placeholder = document.getElementById('sig-placeholder');
+let drawing = false;
+let lastX = 0, lastY = 0;
+
+function resizeCanvas() {
+  const wrap = document.getElementById('sig-canvas-wrap');
+  const dpr  = window.devicePixelRatio || 1;
+  const w    = wrap.clientWidth;
+  const h    = wrap.clientHeight;
+  canvas.width  = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width  = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.strokeStyle = '#012830';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return { x: src.clientX - r.left, y: src.clientY - r.top };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  const p = getPos(e);
+  lastX = p.x; lastY = p.y;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+}
+function draw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const p = getPos(e);
+  ctx.lineTo(p.x, p.y);
+  ctx.stroke();
+  lastX = p.x; lastY = p.y;
+  if (!hasSig) {
+    hasSig = true;
+    placeholder.style.opacity = '0';
+    checkReady();
+  }
+}
+function endDraw(e) {
+  drawing = false;
+  ctx.beginPath();
+}
+
+canvas.addEventListener('mousedown',  startDraw);
+canvas.addEventListener('mousemove',  draw);
+canvas.addEventListener('mouseup',    endDraw);
+canvas.addEventListener('touchstart', startDraw, { passive: false });
+canvas.addEventListener('touchmove',  draw,      { passive: false });
+canvas.addEventListener('touchend',   endDraw);
+
+document.getElementById('clear-sig-btn').addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+  hasSig = false;
+  placeholder.style.opacity = '1';
+  checkReady();
+});
+
+// ── SUBMIT ────────────────────────────────────────────────────────────────────
+function checkReady() {
+  const name = selectedName || (walkinInput.value.trim().length > 1 ? walkinInput.value.trim() + ' (walk-in)' : '');
+  document.getElementById('submit-btn').disabled = !(name && hasSig);
+}
+
+document.getElementById('submit-btn').addEventListener('click', async () => {
+  const name = selectedName || walkinInput.value.trim() + ' (walk-in)';
+  if (!name || !hasSig) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.classList.add('loading');
+  btn.textContent = 'Saving…';
+
+  const timestamp  = new Date().toISOString();
+  const sigDataUrl = canvas.toDataURL('image/png');
+
+  const payload = { name, timestamp, signature: sigDataUrl };
+
+  if (navigator.onLine) {
+    const ok = await postRecord(payload);
+    if (ok) {
+      showToast('✓ ' + name.split(' ')[0] + ' signed in!', 'success');
+      resetAll();
+    } else {
+      queueRecord(payload);
+      showToast('Saved locally — will sync when online', 'queued');
+      resetAll();
+    }
+  } else {
+    queueRecord(payload);
+    showToast('Offline — saved to queue (' + offlineQueue.length + ')', 'queued');
+    resetAll();
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = 'Done — Next Person →';
+  btn.disabled = true;
+});
+
+async function postRecord(payload) {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch(e) {
+    return false;
+  }
+}
+
+function queueRecord(payload) {
+  offlineQueue.push(payload);
+  localStorage.setItem('signin_queue', JSON.stringify(offlineQueue));
+  updateQueueBar();
+}
+
+async function flushQueue() {
+  if (!offlineQueue.length) return;
+  const toSend = [...offlineQueue];
+  let sent = 0;
+  for (const record of toSend) {
+    const ok = await postRecord(record);
+    if (ok) {
+      offlineQueue = offlineQueue.filter(r => r.timestamp !== record.timestamp);
+      sent++;
+    }
+  }
+  if (sent > 0) {
+    localStorage.setItem('signin_queue', JSON.stringify(offlineQueue));
+    showToast(sent + ' queued record(s) synced', 'success');
+    updateQueueBar();
+  }
+}
+
+function updateQueueBar() {
+  const bar = document.getElementById('queue-bar');
+  if (offlineQueue.length > 0) {
+    bar.textContent = '⚠ ' + offlineQueue.length + ' signature(s) pending sync — will upload when online';
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+updateQueueBar();
+
+function resetAll() {
+  resetNameSection();
+  ctx.clearRect(0, 0, canvas.width / (window.devicePixelRatio||1), canvas.height / (window.devicePixelRatio||1));
+  hasSig = false;
+  placeholder.style.opacity = '1';
+  checkReady();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = type; }, 3000);
+}
+
+// ── SERVICE WORKER ────────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
