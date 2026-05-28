@@ -439,7 +439,7 @@ updateOnlineStatus();
 async function loadNames() {
   document.getElementById('refresh-btn').textContent = '↻ Loading…';
   try {
-    const res  = await fetch(SHEET_CSV_URL + '&t=' + Date.now());
+    const res  = await fetch(SHEET_CSV_URL);
     const text = await res.text();
     // Parse CSV — expects one column "Name" with header row
     allNames = text.trim().split('\n')
